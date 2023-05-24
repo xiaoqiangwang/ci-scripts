@@ -1258,6 +1258,10 @@ PERL = C:/Strawberry/perl/bin/perl -CSD'''
         print('{0}$ cl{1}'.format(ANSI_CYAN, ANSI_RESET))
         sys.stdout.flush()
         sp.check_call(['cl'])
+    elif ci['compiler'].startswith('clang+vs'):
+        print('{0}$ clang-cl --version{1}'.format(ANSI_CYAN, ANSI_RESET))
+        sys.stdout.flush()
+        sp.check_call(['clang-cl', '--version'])
     else:
         cc = ci['compiler']
         print('{0}$ {1} --version{2}'.format(ANSI_CYAN, cc, ANSI_RESET))
