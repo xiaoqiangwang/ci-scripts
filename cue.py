@@ -663,6 +663,12 @@ def detect_epics_host_arch():
             elif ci['platform'] == 'x64':
                 os.environ['EPICS_HOST_ARCH'] = 'windows-x64-mingw'
 
+        elif ci['compiler'].startswith('clang+vs'):
+            if ci['platform'] == 'x86':
+                os.environ['EPICS_HOST_ARCH'] = 'win32-x86-clang'
+            elif ci['platform'] == 'x64':
+                os.environ['EPICS_HOST_ARCH'] = 'windows-x64-clang'
+
     if 'EPICS_HOST_ARCH' not in os.environ:
         logger.debug('Running script to detect EPICS host architecture in %s', places['EPICS_BASE'])
         os.environ['EPICS_HOST_ARCH'] = 'unknown'
@@ -1097,7 +1103,7 @@ def prepare(args):
     fold_end('check.out.dependencies', 'Checking/cloning dependencies')
 
     cxx = None
-    if ci['compiler'].startswith('clang'):
+    if ci['compiler'] == 'clang':
         cxx = re.sub(r'clang', r'clang++', ci['compiler'])
     elif ci['compiler'].startswith('gcc'):
         cxx = re.sub(r'gcc', r'g++', ci['compiler'])
@@ -1163,7 +1169,7 @@ endif''')
 
         print('Host compiler', ci['compiler'])
 
-        if ci['compiler'].startswith('clang'):
+        if ci['compiler'] == 'clang':
             with open(os.path.join(places['EPICS_BASE'], 'configure', 'os',
                                    'CONFIG_SITE.Common.'+os.environ['EPICS_HOST_ARCH']), 'a') as f:
                 f.write('''
@@ -1337,7 +1343,7 @@ def doExec(args):
 def with_vcvars(cmd):
     '''re-exec main script with a (hopefully different) command
     '''
-    CC = ci['compiler']
+    CC = ci['compiler'].lstrip('clang+')
 
     # cf. https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line
 
@@ -1441,7 +1447,7 @@ def main(raw):
     prepare_env()
     detect_context()
 
-    if args.vcvars and ci['compiler'].startswith('vs'):
+    if args.vcvars and (ci['compiler'].startswith('vs') or ci['compiler'].startswith('clang+vs')):
         # re-exec with MSVC in PATH
         with_vcvars(' '.join(['--no-vcvars'] + raw))
     else:
