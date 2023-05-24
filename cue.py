@@ -1193,6 +1193,9 @@ CCC         = {1}'''.format(ci['compiler'], cxx))
         elif ci['compiler'].startswith('vs'):
             pass # nothing special
 
+        elif ci['compiler'].startswith('clang+vs'):
+            pass # nothing special
+
         else:
             raise ValueError('Unknown compiler name {0}.  valid forms include: gcc, gcc-4.8, clang, vs2019'.format(ci['compiler']))
 
