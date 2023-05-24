@@ -716,6 +716,15 @@ def setup_for_build(args):
                 os.environ['PATH'] = os.pathsep.join([r'C:\msys64\mingw64\bin',
                                                       os.environ['PATH']])
 
+        if ci['service'] == 'github-actions' and ci['os'] == 'windows' and ci['compiler'] == 'gcc':
+            logger.debug('Adding Chocolatey MinGW installation to PATH')
+            if ci['platform'] == 'x86':
+                os.environ['PATH'] = os.pathsep.join([r'C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw32\bin',
+                                                      os.environ['PATH']])
+            elif ci['platform'] == 'x64':
+                os.environ['PATH'] = os.pathsep.join([r'C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\bin',
+                                                      os.environ['PATH']])
+
     # Find BASE location
     if not building_base:
         with open(os.path.join(ci['cachedir'], 'RELEASE.local'), 'r') as f:
